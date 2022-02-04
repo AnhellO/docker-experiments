@@ -1,0 +1,32 @@
+services:
+  # MongoDB
+  mongo:
+    container_name: mongodb
+    image: mongo:latest
+    env_file:
+      - .env
+    ports:
+      - "27017:27017"
+    networks:
+      - "test_net"
+
+  # Seeder
+  mongo-seed:
+    container_name: mongoseeder
+    env_file:
+      - .env
+    build:
+      context: ./seeder
+      dockerfile: Dockerfile
+      args:
+        - DATABASE_URI=$DATABASE_URI
+        - USERNAME=$MONGO_INITDB_ROOT_USERNAME
+        - PASSWORD=$MONGO_INITDB_ROOT_PASSWORD
+    depends_on:
+      - mongo
+    networks:
+      - "test_net"
+
+networks:
+  test_net:
+    driver: bridge
